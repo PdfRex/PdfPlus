@@ -1,7 +1,7 @@
 # PDF++
 (SuperCharging PDF+)
 
-Adding 
+Adding a few features to the original PDF+  - Find the original here https://github.com/interopxyz/PdfPlus
 
 ---
 
