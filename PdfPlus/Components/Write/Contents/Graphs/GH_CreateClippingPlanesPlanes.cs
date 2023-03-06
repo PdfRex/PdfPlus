@@ -31,13 +31,13 @@ namespace PdfPlus.Components.Write.Contents.Graphs
             pManager.AddGeometryParameter("GeometryBase", "Geo", "Geometry that will be used to generate the planes", GH_ParamAccess.tree);
             pManager.AddNumberParameter("InflateFactor", "F", "A double to inflate the the bounding box of your geometry", GH_ParamAccess.item);
             pManager.AddBooleanParameter("Flip", "FP", "Flip the planes", GH_ParamAccess.item);
-            // bool nZ, bool pZ, bool pX, bool nX, bool nY, bool pY
             pManager.AddBooleanParameter("NZ", "NZ", "Negative Z (Bot plane)", GH_ParamAccess.item);
             pManager.AddBooleanParameter("PZ", "PZ", "Positive Z (Top plane)", GH_ParamAccess.item);
             pManager.AddBooleanParameter("PX", "PX", "Positive X", GH_ParamAccess.item);
             pManager.AddBooleanParameter("NX", "NX", "Negative X", GH_ParamAccess.item);
             pManager.AddBooleanParameter("PY", "PY", "Positive Y", GH_ParamAccess.item);
             pManager.AddBooleanParameter("NY", "PY", "Positive Y", GH_ParamAccess.item);
+            pManager.AddVectorParameter("Camera Direction", "CameraDir", "The direction of the camera", GH_ParamAccess.item);
 
         }
 
@@ -50,6 +50,8 @@ namespace PdfPlus.Components.Write.Contents.Graphs
         }
 
         List<Plane> planeList = new List<Plane>();
+        List<BoundingBox> boundingBoxList = new List<BoundingBox>();
+        Vector3d cameradir = Vector3d.Unset;
 
         /// <summary>
         /// This is the method that actually does the work.
@@ -57,9 +59,11 @@ namespace PdfPlus.Components.Write.Contents.Graphs
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            Vector3d cameradir = Vector3d.Unset;
             planeList.Clear();
-            GH_Structure<IGH_GeometricGoo> geos = new GH_Structure<IGH_GeometricGoo> ();
+            boundingBoxList.Clear();
 
+            GH_Structure<IGH_GeometricGoo> geos = new GH_Structure<IGH_GeometricGoo> ();
 
             DA.GetDataTree(0, out geos);
 
@@ -86,6 +90,8 @@ namespace PdfPlus.Components.Write.Contents.Graphs
 
             bool NY = false;
             DA.GetData(8, ref NY);
+
+            DA.GetData(9, ref cameradir);
 
             GH_Structure<GH_Plane> TreePlanes = new GH_Structure<GH_Plane>();
 
@@ -157,6 +163,7 @@ namespace PdfPlus.Components.Write.Contents.Graphs
         public override void DrawViewportWires(IGH_PreviewArgs args)
         {
             ScreenCaptureHelper.DrawClippingPlanesRectangles(args.Display, planeList);
+            ScreenCaptureHelper.DrawCamera(boundingBoxList, cameradir, args.Display);
         }
 
         /// <summary>

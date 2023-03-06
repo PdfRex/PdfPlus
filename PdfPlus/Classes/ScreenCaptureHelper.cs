@@ -190,6 +190,27 @@ namespace PdfPlus.Classes
         }
 
         /// <summary>
+        /// Gets the biggest distance in a BoundingBox
+        /// </summary>
+        /// <param name="bb"></param>
+        /// <returns></returns>
+        public static double GetMaxDoubleBB(BoundingBox bb)
+        {
+            double max = 0;
+            var corners = bb.GetCorners();
+            double maxX = Math.Abs(corners[7].X - corners[0].X);
+            double maxY = Math.Abs(corners[7].Y - corners[0].Y);
+            double maxZ = Math.Abs(corners[7].Z - corners[0].Z);
+
+            max = maxX;
+            if (max < maxY)
+            { max = maxY; }
+            if (max < maxZ) { max = maxZ; }
+
+            return max; 
+        }
+
+        /// <summary>
         /// Draws the rectangles of the clipping planes and their arrows
         /// </summary>
         /// <param name="dp"></param>
@@ -246,7 +267,18 @@ namespace PdfPlus.Classes
             return bitmap;
         }
 
-
+        /// <summary>
+        /// Draw the camera in the viewport
+        /// </summary>
+        public static void DrawCamera(List<BoundingBox> bbs, Vector3d CameraDirection , Rhino.Display.DisplayPipeline dp)
+        {
+            foreach(var bb in bbs) 
+            {
+                Point3d center = bb.Center;
+                double max = GetMaxDoubleBB(bb);
+                dp.DrawArrow(new Line(center, center + CameraDirection * 3), System.Drawing.Color.Green);
+            }
+        }
 
     }
 }
